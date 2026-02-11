@@ -52,3 +52,17 @@ def resolver(fila=0):
 
 resolver()
 print("\nSolución encontrada 👑")
+
+#=====================================================================================
+
+def funcion(n):
+    print("Hola")
+    if n == 1:
+        print(n)
+    for i in range(0,n): # Se ejecuta n veces porque empieza desde el 0
+        print("Adios")
+
+# Si hay un ciclo o varios y depende de al entrada significa que va a ser de complejidad lineal
+# Si el ciclo no depende la entrada es constante 
+# Cuando llegamos al limite seria el caso Big O, el peor caso de todos por ser probado
+# Para saber cual es el caso Big O, lo unico que hago es eliminar nuestras constantes y evaluar en esas términos
