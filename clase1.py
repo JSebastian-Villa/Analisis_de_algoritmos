@@ -66,3 +66,26 @@ def funcion(n):
 # Si el ciclo no depende la entrada es constante 
 # Cuando llegamos al limite seria el caso Big O, el peor caso de todos por ser probado
 # Para saber cual es el caso Big O, lo unico que hago es eliminar nuestras constantes y evaluar en esas términos
+# Si se llega el caso en que una de las funciones pertenece a la otra se pueden juntar las dos f(n) = n^2 y g(n); la funcion completa es n^2 + n, como pertenecen, se agrupan.
+
+
+"""
+Ejemplo 1
+
+f(n) = n x (n(1)) = n^2
+
+f(n) = n^2 es aceptable
+f(n) = n^3 hay que empezar a revisar
+
+Ejemplo 2
+
+operacion(n)
+i = 1
+while i < n:
+    if XXXXXX:
+        i = i * 2
+
+Su complejidad es logaritmica ya que como se encuentra el while y el resultadi final, se puede ver que i * 2, y analizandi la condición del while;
+podemos observar que llegara mas rapido que si fuera un ciclo for, por lo tanto es logaritmica.
+
+"""
