@@ -99,4 +99,4 @@ print(f"   Paradas necesarias: {paradas}")
 # Complejidad Espacial: O(m) para el heap de servidores
 # ¿Greedy es óptimo? NO siempre, pero da buena aproximación.
 
-i
+
