@@ -2369,3 +2369,341 @@ print(solucion_max_reuniones(reuniones))
 # Decisión local (Greedy):
 # Elegir siempre la reunión que termine más temprano
 # para dejar el mayor espacio posible para reuniones futuras.
+
+"""
+
+HOJA RÁPIDA – PATRONES GREEDY PARA EXAMEN
+
+Regla general Greedy
+1. Ordenar los datos si es necesario
+2. Elegir la mejor opción local
+3. Actualizar el estado del problema
+4. Repetir hasta terminar
+
+--------------------------------------------------
+
+1. Activity Selection (Intervalos / Reuniones / Anuncios)
+
+Problema:
+Maximizar el número de actividades sin solaparse.
+
+Decisión Greedy:
+Elegir siempre la actividad que termina primero.
+
+Pasos:
+1. Ordenar por tiempo de finalización
+2. Seleccionar la primera actividad
+3. Elegir la siguiente cuyo inicio sea >= al último fin
+
+Complejidad:
+O(n log n)
+
+--------------------------------------------------
+
+2. Mochila Fraccionaria
+
+Problema:
+Maximizar el valor dentro de una capacidad limitada.
+
+Decisión Greedy:
+Elegir primero el objeto con mayor relación valor/peso.
+
+Pasos:
+1. Calcular valor/peso
+2. Ordenar descendente por esa relación
+3. Tomar el objeto completo o la fracción posible
+
+Complejidad:
+O(n log n)
+
+--------------------------------------------------
+
+3. Conectar cuerdas / Fusionar archivos
+
+Problema:
+Minimizar el costo total de fusiones.
+
+Decisión Greedy:
+Siempre combinar los dos elementos más pequeños.
+
+Estructura usada:
+Min Heap (heapq)
+
+Proceso:
+1. Convertir lista en heap
+2. Sacar los dos menores
+3. Sumarlos
+4. Insertar el resultado nuevamente
+
+Complejidad:
+O(n log n)
+
+--------------------------------------------------
+
+4. Jump Game
+
+Problema:
+Determinar si se puede llegar al final del arreglo.
+
+Decisión Greedy:
+Mantener el mayor alcance posible en cada posición.
+
+Idea clave:
+alcance_max = max(alcance_max, indice + salto)
+
+Si indice > alcance_max → no se puede llegar.
+
+Complejidad:
+O(n)
+
+--------------------------------------------------
+
+5. Interval Covering (Cubrir carretera)
+
+Problema:
+Cubrir un rango usando el menor número de intervalos.
+
+Decisión Greedy:
+Elegir el intervalo que empiece antes o igual al punto actual
+y que llegue más lejos.
+
+Proceso:
+1. Ordenar intervalos
+2. Desde la posición actual buscar el que más se extienda
+3. Avanzar hasta ese punto
+
+Complejidad:
+O(n log n)
+
+--------------------------------------------------
+
+6. Emparejar pesado con ligero (contenedores / barcos / viajes)
+
+Problema:
+Minimizar el número de contenedores o viajes.
+
+Decisión Greedy:
+Combinar el objeto más pesado con el más ligero posible.
+
+Técnica:
+Dos punteros.
+
+Proceso:
+1. Ordenar la lista
+2. i = ligero
+3. j = pesado
+4. Si caben juntos → mover ambos
+5. Si no → mover solo el pesado
+
+Complejidad:
+O(n log n)
+
+--------------------------------------------------
+
+7. Asignación de tareas a servidores
+
+Problema:
+Minimizar el tiempo en que termina el último servidor.
+
+Decisión Greedy:
+Asignar cada tarea al servidor menos ocupado.
+
+Estructura usada:
+Min Heap.
+
+Proceso:
+1. Ordenar tareas
+2. Extraer servidor con menor carga
+3. Asignar tarea
+4. Volver a insertar con nueva carga
+
+Complejidad:
+O(n log m)
+
+m = número de servidores
+
+--------------------------------------------------
+
+Estructuras que aparecen frecuentemente en Greedy
+
+sort() → ordenar intervalos o valores
+heap / heapq → mínimos o fusiones
+dos punteros → emparejar pesos
+recorrido simple → máximo alcance
+valor/peso → mochila
+
+--------------------------------------------------
+
+Regla rápida para reconocer Greedy en un examen
+
+Si el problema dice:
+
+- máximo número
+- mínimo costo
+- mínimo número
+- maximizar valor
+- intervalos
+- asignar tareas
+- fusionar elementos
+
+es muy probable que sea Greedy.
+
+--------------------------------------------------
+
+Patrón mental para construir un algoritmo Greedy
+
+1 ordenar
+2 elegir la mejor decisión local
+3 actualizar estado
+4 repetir
+
+"""
+"""
+
+CONSEJOS CLAVE PARA RESOLVER GREEDY EN EXAMEN
+
+1. Primero piensa si el problema se puede ordenar
+Muchísimos algoritmos Greedy empiezan ordenando.
+
+Si ves:
+- intervalos
+- pesos
+- tiempos
+- valores
+- tareas
+
+Probablemente el primer paso es:
+
+sort()
+
+--------------------------------------------------
+
+2. Identifica la decisión local
+
+Greedy siempre toma una decisión local óptima.
+
+Pregúntate:
+
+¿Qué decisión parece mejor en ESTE momento?
+
+Ejemplos típicos:
+
+intervalos → terminar primero
+mochila → mayor valor/peso
+cuerdas → dos más pequeños
+servidores → menor carga
+barcos → pesado + ligero
+jump game → mayor alcance
+
+Si encuentras esa regla → ya tienes el algoritmo.
+
+--------------------------------------------------
+
+3. Muchos problemas Greedy tienen estas estructuras
+
+sort()
+heap
+dos punteros
+for simple
+
+Si ves estas estructuras, probablemente es Greedy.
+
+--------------------------------------------------
+
+4. Si puedes resolver el problema avanzando sin retroceder
+
+Greedy casi siempre:
+
+- recorre una vez
+- no vuelve atrás
+- no prueba muchas combinaciones
+
+Eso significa que probablemente es O(n) o O(n log n).
+
+--------------------------------------------------
+
+5. Si necesitas probar todas las combinaciones NO es Greedy
+
+Si el problema requiere:
+
+- probar todas las opciones
+- backtracking
+- programación dinámica
+
+Entonces NO es Greedy.
+
+--------------------------------------------------
+
+6. En muchos parciales Greedy siempre empieza así
+
+datos.sort()
+
+Luego:
+
+for elemento in datos:
+
+Esto ya te da media solución.
+
+--------------------------------------------------
+
+7. Complejidades típicas de Greedy
+
+Si hay sort:
+
+O(n log n)
+
+Si hay heap:
+
+O(n log n)
+
+Si es recorrido simple:
+
+O(n)
+
+Muy raro que sea O(n²).
+
+--------------------------------------------------
+
+8. Cómo justificar la decisión Greedy en un examen
+
+Puedes escribir algo como:
+
+"La estrategia greedy consiste en elegir en cada paso la opción
+que optimiza el criterio local del problema, lo que conduce
+a una solución global óptima."
+
+O algo más simple:
+
+"En cada paso elegimos la opción que produce el mejor resultado inmediato."
+
+--------------------------------------------------
+
+9. Si te bloqueas en el examen
+
+Usa esta receta:
+
+1 ordenar datos
+2 elegir mejor opción local
+3 actualizar estado
+4 repetir hasta terminar
+
+Esto funciona en la mayoría de problemas Greedy.
+
+--------------------------------------------------
+
+10. Tip que usan mucho los profesores
+
+Muchos problemas Greedy en parciales son variaciones de:
+
+- Activity Selection
+- Mochila Fraccionaria
+- Conectar Cuerdas
+- Jump Game
+- Interval Covering
+- Barcos / Contenedores
+- Scheduling de tareas
+
+Si reconoces uno de estos patrones,
+puedes adaptar la solución rápidamente.
+
+"""
