@@ -474,3 +474,1107 @@ def imprimir_sudoku(tablero):
 # Complejidad de espacio: O(81) ≈ O(1)
 # - profundidad máxima de recursión: 81 celdas
 # - el tablero se modifica en el mismo espacio (in-place)
+
+#========================================
+
+"""
+Enunciado
+
+Dado un arreglo de números positivos y un valor objetivo T, encuentra todas las combinaciones de números cuya suma sea exactamente T.
+Cada número puede usarse a lo sumo una vez.
+
+Ejemplo:
+nums = [2, 3, 5, 6, 8]
+T = 10
+
+Soluciones:
+
+[2, 3, 5]
+[2, 8]
+"""
+def combinaciones_suma(nums, T):
+    resultado = []
+
+    def backtrack(i, actual, suma):
+        if suma == T:
+            resultado.append(actual[:])
+            return
+
+        if suma > T:
+            return
+
+        if i == len(nums):
+            return
+
+        # Tomar nums[i]
+        actual.append(nums[i])
+        backtrack(i + 1, actual, suma + nums[i])
+        actual.pop()
+
+        # No tomar nums[i]
+        backtrack(i + 1, actual, suma)
+
+    backtrack(0, [], 0)
+    return resultado
+
+# ── Ejemplo 1: Combinaciones de suma ──
+print("1. COMBINACIONES DE SUMA")
+print("-" * 50)
+nums = [2, 3, 5, 6, 8]
+T = 10
+print("Números:", nums)
+print("Objetivo:", T)
+print("Combinaciones que suman T:", combinaciones_suma(nums, T))
+
+"""
+Cómo justificar la poda en examen
+
+Se poda cuando la suma parcial supera el objetivo, ya que todos los números son positivos y seguir agregando solo aumentaría más la suma.
+
+🔥 Esa justificación está perfecta.
+"""
+
+# Complejidad de tiempo: O(2^n)
+# - En cada posición del arreglo hay dos decisiones posibles:
+#   1) Tomar el elemento actual
+#   2) No tomarlo
+# - Esto genera un árbol de decisiones binario con altura n
+# - Por lo tanto, en el peor caso se exploran hasta 2^n combinaciones posibles
+#
+# - La poda (cuando suma > T) reduce el número de llamadas en la práctica,
+#   pero no cambia la complejidad en el peor caso
+# - Esto se debe a que podría darse un caso donde casi ninguna rama se poda
+#
+# - Además, cada vez que se encuentra una solución, se copia el arreglo actual,
+#   lo cual cuesta O(n), pero el factor dominante sigue siendo 2^n
+#
+# 👉 Conclusión: la complejidad total es O(2^n)
+
+#=============================================
+
+"""
+Enunciado
+
+Dado un conjunto de empleados y turnos, y una disponibilidad por turno, genera todas las asignaciones válidas tales que:
+
+Cada turno tenga exactamente un empleado
+Ningún empleado trabaje en más de un turno
+Ejemplo:
+empleados = ["Ana", "Luis", "Carlos"]
+turnos = ["Mañana", "Tarde"]
+
+disponibilidad = {
+    "Mañana": ["Ana", "Luis"],
+    "Tarde": ["Luis", "Carlos"]
+}
+"""
+def asignar_turnos(turnos, disponibilidad):
+    resultado = []
+
+    def backtrack(i, asignacion, usados):
+        # Caso base
+        if i == len(turnos):
+            resultado.append(asignacion.copy())
+            return
+
+        turno = turnos[i]
+
+        for empleado in disponibilidad[turno]:
+            # Poda: no repetir empleado
+            if empleado in usados:
+                continue
+
+            asignacion[turno] = empleado
+            usados.add(empleado)
+
+            backtrack(i + 1, asignacion, usados)
+
+            usados.remove(empleado)
+            del asignacion[turno]
+
+    backtrack(0, {}, set())
+    return resultado
+
+turnos = ["Mañana", "Tarde"]
+disponibilidad = {
+    "Mañana": ["Ana", "Luis"],
+    "Tarde": ["Luis", "Carlos"]
+}
+
+print(asignar_turnos(turnos, disponibilidad))
+"""
+O(m^n)
+m = empleados posibles
+n = cantidad de turnos
+8. Justificación para examen
+
+Se utiliza backtracking porque el problema consiste en construir una asignación válida turno por turno.
+Se poda cuando un empleado ya ha sido asignado previamente, ya que no puede ocupar más de un turno.
+"""
+
+# Complejidad de tiempo: O(m^n)
+# - n es la cantidad de turnos
+# - m es el número máximo de empleados disponibles por turno
+#
+# - En cada turno (nivel del árbol), se puede elegir entre hasta m empleados
+# - Esto genera un árbol de decisiones de altura n, con hasta m opciones por nivel
+# - Por lo tanto, el número máximo de combinaciones exploradas es m^n
+#
+# - La poda (cuando un empleado ya fue usado) reduce el número de ramas,
+#   ya que evita asignaciones inválidas
+# - Sin embargo, en el peor caso (cuando todos los empleados están disponibles en todos los turnos),
+#   el algoritmo sigue siendo exponencial
+#
+# - En cada solución válida se hace una copia del diccionario de asignación,
+#   lo cual cuesta O(n), pero el factor dominante sigue siendo m^n
+#
+# 👉 Conclusión: la complejidad total es O(m^n)
+
+#?============================
+
+
+"""
+EJERCICIO 2 — Formar grupos sin incompatibilidades
+Enunciado
+
+Tienes una lista de personas y una lista de pares incompatibles.
+Debes formar un grupo de tamaño k sin incluir personas incompatibles entre sí.
+
+Ejemplo:
+personas = ["Ana", "Luis", "Carlos", "Sofia", "Marta"]
+incompatibles = {("Ana", "Luis"), ("Carlos", "Sofia")}
+k = 3
+"""
+def formar_grupos(personas, incompatibles, k):
+    resultado = []
+
+    def son_compatibles(grupo, persona):
+        for p in grupo:
+            if (p, persona) in incompatibles or (persona, p) in incompatibles:
+                return False
+        return True
+
+    def backtrack(i, grupo):
+        if len(grupo) == k:
+            resultado.append(grupo[:])
+            return
+
+        if i == len(personas):
+            return
+
+        if len(grupo) + (len(personas) - i) < k:
+            return
+
+        if son_compatibles(grupo, personas[i]):
+            grupo.append(personas[i])
+            backtrack(i + 1, grupo)
+            grupo.pop()
+
+        backtrack(i + 1, grupo)
+
+    backtrack(0, [])
+    return resultado
+
+# ── Ejemplo 2: Formar grupos sin incompatibilidades ──
+print("\n2. FORMAR GRUPOS SIN INCOMPATIBILIDADES")                      
+print("-" * 50)
+personas = ["Ana", "Luis", "Carlos", "Sofia", "Marta"]
+incompatibles = {("Ana", "Luis"), ("Carlos", "Sofia")}
+k = 3
+print("Personas:", personas)
+print("Incompatibles:", incompatibles)
+print("Grupos de tamaño k sin incompatibilidades:", formar_grupos(personas, incompatibles, k))
+
+"""
+Cómo justificar la poda
+
+Se poda cuando el grupo parcial contiene una incompatibilidad, porque ya no puede convertirse en una solución válida.
+También se poda cuando no quedan suficientes personas para completar el tamaño requerido del grupo.
+
+💥 Esto es exactamente lo que suele preguntar un profe.
+"""
+
+# Complejidad de tiempo: O(C(n, k) * k)
+# - n es la cantidad total de personas
+# - k es el tamaño del grupo que queremos formar
+#
+# - El algoritmo genera combinaciones de tamaño k a partir de n personas
+# - La cantidad de combinaciones posibles es:
+#   C(n, k) = n! / (k! * (n-k)!)
+#
+# - Por cada combinación, se verifica si las personas son compatibles
+# - La función son_compatibles revisa el grupo actual, lo cual cuesta O(k)
+#
+# - Por lo tanto, el costo total es:
+#   O(C(n, k) * k)
+#
+# - Las podas reducen significativamente el número de combinaciones exploradas:
+#   1) Se evita formar grupos con incompatibilidades
+#   2) Se corta cuando no hay suficientes personas restantes para completar el grupo
+#
+# - Sin embargo, en el peor caso (sin incompatibilidades),
+#   el algoritmo sigue generando todas las combinaciones posibles
+#
+# 👉 Conclusión: la complejidad es O(C(n, k) * k)
+
+#=================================
+
+"""
+EJERCICIO 3 — Cadenas binarias sin dos 1 seguidos
+Enunciado
+
+Genera todas las cadenas binarias de longitud n que no tengan dos 1 consecutivos.
+
+Ejemplo:
+
+Para n = 3:
+
+000
+001
+010
+100
+101
+"""
+def binarias_sin_unos_consecutivos(n):
+    resultado = []
+
+    def backtrack(cadena):
+        if len(cadena) == n:
+            resultado.append("".join(cadena))
+            return
+
+        cadena.append("0")
+        backtrack(cadena)
+        cadena.pop()
+
+        if not cadena or cadena[-1] != "1":
+            cadena.append("1")
+            backtrack(cadena)
+            cadena.pop()
+
+    backtrack([])
+    return resultado
+
+# ── Ejemplo 3: Cadenas binarias sin dos 1 seguidos ──
+print("\n3. CADENAS BINARIAS SIN DOS 1 SEGUIDOS")
+print("-" * 50)
+n = 5
+print(f"Cadenas binarias de longitud {n} sin dos 1 seguidos:")
+print(binarias_sin_unos_consecutivos(n))
+
+"""
+Cómo justificar la poda
+
+Se poda cuando la cadena parcial termina en 1 y se intenta agregar otro 1, ya que esto violaría la restricción del problema.
+
+Muy limpia.
+"""
+
+# Complejidad de tiempo: O(2^n)
+# - En cada posición de la cadena hay dos decisiones posibles:
+#   1) Agregar '0'
+#   2) Agregar '1'
+#
+# - Esto genera un árbol de decisiones binario de altura n
+# - En el peor caso, el número de nodos explorados es del orden de 2^n
+#
+# - Sin embargo, existe poda:
+#   - No se permite agregar '1' si el último elemento ya es '1'
+#   - Esto reduce el número de combinaciones generadas
+#
+# - De hecho, la cantidad real de soluciones sigue la sucesión de Fibonacci:
+#   - f(n) = f(n-1) + f(n-2)
+#   - Esto crece aproximadamente como O(φ^n), donde φ ≈ 1.618
+#
+# - Aun así, para análisis de peor caso en backtracking,
+#   se considera la cota superior O(2^n)
+#
+# - Además, cada cadena generada se construye en O(n)
+#   por el join, pero el factor dominante sigue siendo exponencial
+#
+# 👉 Conclusión: O(2^n) en peor caso (más preciso: O(φ^n))
+
+#================================
+
+"""
+EJERCICIO 4 — Selección de tareas con tiempo límite
+Enunciado
+
+Tienes varias tareas, cada una con una duración.
+Encuentra todas las formas de seleccionar tareas de modo que el tiempo total no supere un límite L.
+
+Ejemplo:
+tareas = [2, 4, 5, 3]
+L = 7
+"""
+def seleccionar_tareas(tareas, L):
+    resultado = []
+
+    def backtrack(i, actual, tiempo):
+        if tiempo > L:
+            return
+
+        if i == len(tareas):
+            resultado.append(actual[:])
+            return
+
+        actual.append(tareas[i])
+        backtrack(i + 1, actual, tiempo + tareas[i])
+        actual.pop()
+
+        backtrack(i + 1, actual, tiempo)
+
+    backtrack(0, [], 0)
+    return resultado
+
+# ── Ejemplo 4: Selección de tareas con tiempo límite ──    
+print("\n4. SELECCIÓN DE TAREAS CON TIEMPO LÍMITE")
+print("-" * 50)
+tareas = [2, 4, 5, 3]
+L = 7
+print("Tareas:", tareas)
+print("Límite de tiempo:", L)
+print("Combinaciones de tareas que no superan el límite:", seleccionar_tareas(tareas, L))
+
+"""
+Justificación de poda
+
+Se poda cuando el tiempo acumulado supera el límite permitido, ya que agregar más tareas solo incrementaría el tiempo total.
+"""
+
+# Complejidad de tiempo: O(2^n)
+# - n es la cantidad de tareas
+#
+# - En cada tarea hay dos decisiones:
+#   1) Incluir la tarea
+#   2) No incluir la tarea
+#
+# - Esto genera un árbol de decisiones binario de altura n
+# - En el peor caso, se exploran hasta 2^n combinaciones posibles
+#
+# - La poda ocurre cuando el tiempo acumulado supera L,
+#   lo que evita seguir explorando esa rama
+#
+# - Sin embargo, en el peor caso (cuando L es grande y casi todas las combinaciones son válidas),
+#   la poda casi no reduce el árbol
+#
+# - Cada subconjunto válido se copia en O(n),
+#   pero el factor dominante sigue siendo la cantidad de combinaciones
+#
+# 👉 Conclusión: la complejidad es O(2^n)
+
+#====================================
+
+"""
+Enunciado
+
+Dadas letras distintas, genera todas las palabras de longitud k sin repetir letras.
+
+Ejemplo:
+letras = ["A", "B", "C", "D"]
+k = 3
+"""
+
+def palabras(letras, k):
+    resultado = []
+    usadas = [False] * len(letras)
+
+    def backtrack(actual):
+        if len(actual) == k:
+            resultado.append("".join(actual))
+            return
+
+        for i in range(len(letras)):
+            if not usadas[i]:
+                usadas[i] = True
+                actual.append(letras[i])
+
+                backtrack(actual)
+
+                actual.pop()
+                usadas[i] = False
+
+    backtrack([])
+    return resultado
+
+# ── Ejemplo 1: Generar palabras sin repetir letras ──
+print("1. GENERAR PALABRAS SIN REPETIR LETRAS")         
+print("-" * 50)
+letras = ["A", "B", "C", "D"]
+k = 3
+print("Letras:", letras)
+print("Palabras de longitud k sin repetir letras:", palabras(letras, k))
+
+"""
+Justificación de poda
+
+Se evita explorar ramas donde una letra ya fue utilizada, porque el problema exige que no haya repeticiones.
+"""
+
+# Complejidad de tiempo: O(P(n, k)) = O(n! / (n-k)!)
+# - n es la cantidad de letras disponibles
+# - k es la longitud de cada palabra
+#
+# - El algoritmo genera todas las formas de elegir k letras sin repetir y con orden
+# - Esto corresponde a las permutaciones de n elementos tomados de k en k:
+#   P(n, k) = n! / (n-k)!
+#
+# - En el primer nivel hay n opciones, luego n-1, luego n-2, ..., hasta k niveles
+# - Por lo tanto, el número total de combinaciones es:
+#   n * (n-1) * (n-2) * ... * (n-k+1)
+#
+# - Cada palabra generada se construye en O(k) (por el join)
+# - Pero el factor dominante es la cantidad de permutaciones
+#
+# 👉 Conclusión: la complejidad es O(n! / (n-k)!)
+
+#========================================
+
+"""
+Enunciado
+
+Dado un arreglo de enteros positivos, encuentra todos los subconjuntos de tamaño k cuya suma sea impar.
+
+Ejemplo:
+nums = [1, 2, 3, 4]
+k = 2
+
+Soluciones:
+
+[1, 2]
+[1, 4]
+[2, 3]
+[3, 4]
+"""
+def subconjuntos_impares(nums, k):
+    resultado = []
+
+    def backtrack(i, actual, suma):
+        if len(actual) == k:
+            if suma % 2 == 1:
+                resultado.append(actual[:])
+            return
+
+        if i == len(nums):
+            return
+
+        if len(actual) + (len(nums) - i) < k:
+            return
+
+        actual.append(nums[i])
+        backtrack(i + 1, actual, suma + nums[i])
+        actual.pop()
+
+        backtrack(i + 1, actual, suma)
+
+    backtrack(0, [], 0)
+    return resultado
+# Ejemplo de uso
+nums = [1, 2, 3, 4]
+k = 2
+print(subconjuntos_impares(nums, k))
+# Salida:
+# [[1, 2], [1, 4], [2, 3], [3, 4]]  
+
+# Complejidad de tiempo: O(C(n, k) * k)
+# - n es la cantidad de elementos en el arreglo
+# - k es el tamaño del subconjunto que queremos formar
+#
+# - El algoritmo genera combinaciones de tamaño k a partir de n elementos
+# - La cantidad de combinaciones posibles es:
+#   C(n, k) = n! / (k! * (n-k)!)
+#
+# - Por cada subconjunto generado, se verifica si la suma es impar
+# - Esta verificación es O(1) porque ya llevamos la suma acumulada
+#
+# - Sin embargo, al guardar el subconjunto se hace una copia,
+#   lo cual cuesta O(k)
+#
+# - La poda:
+#   if len(actual) + (len(nums) - i) < k
+#   evita explorar ramas donde no es posible completar k elementos,
+#   reduciendo el número de llamadas recursivas
+#
+# - Aun así, en el peor caso se generan todas las combinaciones posibles
+#
+# 👉 Conclusión: la complejidad total es O(C(n, k) * k)
+
+#===========================================
+
+"""
+EJERCICIO 1 — Equipos de tamaño k con puntaje exacto
+⭐ MUY TIPO EXAMEN
+Enunciado
+
+Tienes una lista de jugadores con puntajes.
+Debes formar todos los equipos de tamaño k cuya suma de puntajes sea exactamente T.
+
+Ejemplo:
+jugadores = [("Ana", 3), ("Luis", 5), ("Carlos", 2), ("Marta", 4)]
+k = 2
+T = 7
+Salida esperada:
+[["Ana", "Marta"], ["Luis", "Carlos"]]
+1. ¿Por qué esto es backtracking?
+
+Porque:
+
+estás eligiendo jugadores
+construyes el equipo paso a paso
+cada jugador se toma o no se toma
+si ya te pasaste del puntaje o ya no puedes completar el equipo, podas
+
+👉 Este es el modelo clásico de subconjuntos / combinaciones.
+"""
+def equipos_puntaje(jugadores, k, T):
+    resultado = []
+
+    def backtrack(i, equipo, suma_actual):
+        # Caso base: si ya tengo k jugadores
+        if len(equipo) == k:
+            if suma_actual == T:
+                resultado.append(equipo[:])
+            return
+
+        # Si ya recorrí todos los jugadores
+        if i == len(jugadores):
+            return
+
+        # Poda 1: si la suma ya se pasó
+        if suma_actual > T:
+            return
+
+        # Poda 2: si ya no alcanza para completar k
+        if len(equipo) + (len(jugadores) - i) < k:
+            return
+
+        nombre, puntaje = jugadores[i]
+
+        # Opción 1: tomar al jugador actual
+        equipo.append(nombre)
+        backtrack(i + 1, equipo, suma_actual + puntaje)
+        equipo.pop()
+
+        # Opción 2: no tomar al jugador actual
+        backtrack(i + 1, equipo, suma_actual)
+
+    backtrack(0, [], 0)
+    return resultado
+# Ejemplo de uso
+jugadores = [("Ana", 3), ("Luis", 5), ("Carlos", 2), ("Marta", 4)]
+k = 2
+T = 7
+print(equipos_puntaje(jugadores, k, T))
+# Salida esperada:          
+# [["Ana", "Marta"], ["Luis", "Carlos"]]
+
+"""
+Se utiliza backtracking porque el problema consiste en construir equipos válidos de manera incremental,
+explorando las decisiones de incluir o no incluir cada jugador.
+Se poda una rama cuando la suma parcial supera el objetivo o cuando
+ya no quedan suficientes jugadores para completar un equipo de tamaño k
+.
+complejidad:    O(2^n) 
+Porque para cada jugador decides:
+tomarlo
+no tomarlo
+"""
+# Complejidad de tiempo: O(C(n, k) * k)
+# - n es la cantidad de jugadores
+# - k es el tamaño del equipo
+#
+# - El algoritmo genera combinaciones de tamaño k a partir de n jugadores
+# - La cantidad de combinaciones posibles es:
+#   C(n, k) = n! / (k! * (n-k)!)
+#
+# - Aunque el árbol de decisiones es binario (tomar / no tomar),
+#   las podas obligan a que solo se formen equipos de tamaño k
+#   → esto reduce el espacio de búsqueda a combinaciones
+#
+# - Por cada equipo válido:
+#   - Se verifica la suma (ya llevada acumulada → O(1))
+#   - Se hace una copia del equipo → O(k)
+#
+# - Las podas ayudan bastante:
+#   1) suma_actual > T → corta ramas inválidas
+#   2) no alcanzan jugadores → evita exploraciones inútiles
+#
+# - Aun así, en el peor caso (cuando muchas combinaciones cumplen),
+#   se generan todas las combinaciones de tamaño k
+#
+# 👉 Conclusión: O(C(n, k) * k)
+
+#================================================
+
+"""
+Una empresa genera códigos con las letras:
+
+["A", "B", "C"]
+
+Debes generar todos los códigos de longitud n tales que:
+
+No haya dos letras iguales consecutivas
+El código contenga al menos una vez la letra "B"
+Ejemplo:
+n = 3
+"""
+def generar_codigos(n):
+    letras = ["A", "B", "C"]
+    resultado = []
+
+    def backtrack(actual, tiene_b):
+        # Caso base
+        if len(actual) == n:
+            if tiene_b:
+                resultado.append("".join(actual))
+            return
+
+        for letra in letras:
+            # Poda: no repetir consecutivamente
+            if actual and actual[-1] == letra:
+                continue
+
+            actual.append(letra)
+            backtrack(actual, tiene_b or letra == "B")
+            actual.pop()
+
+    backtrack([], False)
+    return resultado
+
+# Ejemplo de uso
+n = 3
+print(generar_codigos(n))
+# Salida:
+# ['ABA', 'ABC', 'ACA', 'ACB', 'BAA', ' BAC', 'BCA', 'BCB', 'CAB', 'CBC']       
+"""
+8. Justificación para examen
+
+Se aplica backtracking porque el código se construye carácter por carácter, evaluando en cada paso qué letra puede agregarse.
+Se poda cuando una letra es igual a la anterior, ya que eso violaría la restricción del problema.
+complejidad:
+O(3^n) Cada posición tiene hasta 3 opciones: A, B o C, pero debido a la poda, el número real de combinaciones es menor.
+"""
+
+# Complejidad de tiempo: O(3^n)
+# - n es la longitud del código
+#
+# - En cada posición hay hasta 3 opciones posibles: A, B o C
+# - Esto genera un árbol de decisiones de altura n con un máximo de 3 ramas por nivel
+# - Por lo tanto, en el peor caso se exploran hasta 3^n combinaciones
+#
+# - Sin embargo, existe poda:
+#   - No se permite repetir la misma letra consecutivamente
+#   - Esto reduce las opciones a lo sumo 2 por nivel después del primero
+#
+# - Por eso, el número real de combinaciones es menor,
+#   aproximadamente del orden de 3 * 2^(n-1)
+#
+# - Además, se lleva un control con 'tiene_b' para verificar si aparece la letra B,
+#   pero esto no afecta el número de ramas exploradas, solo filtra al final
+#
+# - Cada código válido se construye en O(n) (por el join),
+#   pero el factor dominante sigue siendo exponencial
+#
+# 👉 Conclusión:
+# - Cota superior: O(3^n)
+# - Más preciso: O(2^n)
+
+#====================================
+
+"""
+Enunciado
+
+Dada una lista de materias y una lista de pares incompatibles por cruce de horario, genera todas las selecciones de tamaño k tales que ninguna materia sea incompatible con otra.
+
+Ejemplo:
+materias = ["MAT", "FIS", "PROG", "BD", "REDES"]
+incompatibles = {("MAT", "FIS"), ("PROG", "BD")}
+k = 3
+"""
+def materias_compatibles(materias, incompatibles, k):
+    resultado = []
+
+    def es_compatible(actual, materia):
+        for m in actual:
+            if (m, materia) in incompatibles or (materia, m) in incompatibles:
+                return False
+        return True
+
+    def backtrack(i, actual):
+        # Caso base válido
+        if len(actual) == k:
+            resultado.append(actual[:])
+            return
+
+        # Si se acabaron las materias
+        if i == len(materias):
+            return
+
+        # Poda: ya no alcanza
+        if len(actual) + (len(materias) - i) < k:
+            return
+
+        # Opción 1: tomar materia si es compatible
+        if es_compatible(actual, materias[i]):
+            actual.append(materias[i])
+            backtrack(i + 1, actual)
+            actual.pop()
+
+        # Opción 2: no tomarla
+        backtrack(i + 1, actual)
+
+    backtrack(0, [])
+    return resultado
+
+materias = ["MAT", "FIS", "PROG", "BD", "REDES"]
+incompatibles = {("MAT", "FIS"), ("PROG", "BD")}
+
+print(materias_compatibles(materias, incompatibles, 3))
+"""
+complejidad: O(2^n) en el peor caso, ya que cada materia puede ser tomada o no, pero la poda reduce significativamente 
+el número de combinaciones a evaluar.
+8. Justificación de poda
+
+Se poda una rama cuando la materia actual es incompatible con alguna materia ya seleccionada, porque esa selección parcial no puede convertirse en una solución válida.
+También se poda cuando ya no quedan suficientes materias para completar una selección de tamaño k.
+
+💥 Muy buena explicación de parcial.
+"""
+
+# Complejidad de tiempo: O(C(n, k) * k)
+# - n es la cantidad de materias
+# - k es el tamaño de la selección
+#
+# - Aunque el algoritmo toma decisiones binarias (tomar o no tomar),
+#   las restricciones hacen que solo se generen combinaciones de tamaño k
+#
+# - Por lo tanto, el número de posibles soluciones es:
+#   C(n, k) = n! / (k! * (n-k)!)
+#
+# - En cada paso, al intentar agregar una materia,
+#   se verifica si es compatible con las ya seleccionadas
+#
+# - La función es_compatible recorre el grupo actual,
+#   lo cual cuesta O(k) en el peor caso
+#
+# - Entonces, por cada combinación evaluada hay un costo adicional O(k)
+#
+# - Las podas reducen el árbol:
+#   1) incompatibilidad → evita combinaciones inválidas
+#   2) no alcanzan materias → evita ramas inútiles
+#
+# - Sin embargo, en el peor caso (sin incompatibilidades),
+#   se generan todas las combinaciones posibles
+#
+# 👉 Conclusión: la complejidad es O(C(n, k) * k)
+
+#==========================================
+
+"""
+1) Cómo reconocer un problema de Backtracking en 10 segundos
+
+Si el problema tiene estas características, casi seguro es backtracking:
+
+Señales claras:
+Hay que probar posibilidades.
+La solución se construye paso a paso.
+En cada paso hay varias opciones.
+Algunas decisiones pueden hacer que la solución sea inválida.
+Quieren:
+todas las soluciones,
+una solución válida,
+o la mejor solución entre muchas.
+Frase mental:
+
+“Voy armando una solución parcial, y si veo que ya no sirve, me devuelvo.”
+
+Eso es backtracking.
+2) formato general de un algoritmo de Backtracking
+def backtrack(estado_actual):
+    if caso_base:
+        guardar_respuesta()
+        return
+
+    for opcion in opciones_posibles:
+        if es_valida(opcion):
+            hacer(opcion)
+            backtrack(nuevo_estado)
+            deshacer(opcion)
+3) Lo MÁS importante del examen: ¿cómo encontrar la PODA?
+
+Esta es la parte clave.
+
+Regla de oro:
+
+La poda aparece cuando puedes decir:
+
+“Aunque siga explorando por aquí, ya sé que esto no puede terminar bien”.
+
+Entonces cortas esa rama.
+
+4) Tipos de poda que más salen en examen
+PODA TIPO 1: Restricción violada
+
+La más fácil y más común.
+
+Idea:
+
+Si la solución parcial ya incumple una regla, no tiene sentido seguir.
+
+Ejemplo:
+“La suma no puede pasar de 10”
+“No se pueden repetir números”
+“No pueden ir dos personas incompatibles juntas”
+“No puede haber dos letras iguales consecutivas”
+Forma mental:
+
+“Ya me pasé / ya rompí una regla / ya quedó inválido”.
+
+✅ Se poda inmediatamente.
+
+PODA TIPO 2: Ya no alcanza para completar
+
+Muy típica y muy buena.
+
+Idea:
+
+Aunque sigas, ya no te quedan suficientes elementos para completar la solución.
+
+Ejemplo:
+
+“Debo escoger 4 elementos y llevo 2, pero solo me queda 1 disponible”.
+
+Entonces:
+
+necesito 2 más,
+pero solo hay 1,
+imposible terminar.
+Condición típica:
+if len(solucion_actual) + elementos_restantes < tamaño_objetivo:
+    return
+Forma mental:
+
+“Ya no me da”.
+
+PODA TIPO 3: Me pasé del objetivo
+
+Muy común en problemas de suma, peso, costo, capacidad, etc.
+
+Ejemplo:
+suma objetivo = 15
+llevas 18
+
+Ya no sirve seguir si solo puedes agregar positivos.
+
+Condición típica:
+if suma_actual > objetivo:
+    return
+Forma mental:
+
+“Ya me pasé, no hay forma de arreglarlo”.
+
+⚠️ Ojo: esta poda solo sirve si no existen negativos o algo que pueda compensar.
+
+PODA TIPO 4: No puede superar la mejor solución actual
+
+Esto sale cuando el problema es de optimización:
+
+máximo valor,
+mínimo costo,
+mejor combinación,
+etc.
+Idea:
+
+Si ya tienes una mejor respuesta guardada, y esta rama ni en el mejor caso puede superarla, la cortas.
+
+Ejemplo:
+
+“Quiero el subconjunto de mayor suma sin pasarme de 20”.
+
+Si una rama actual lleva suma 7, y aun usando todo lo que queda solo llegaría a 10, pero ya tienes una solución de 14…
+
+❌ Esa rama ya no sirve.
+
+Forma mental:
+
+“Ni esforzándose esta rama gana”.
+
+Esto ya es una poda más fuerte.
+
+5) Cómo sacar la poda en un examen paso a paso
+
+Cuando leas el enunciado, pregúntate esto:
+
+Pregunta 1:
+“¿Qué hace inválida una solución parcial?”
+
+Eso te da la poda más obvia.
+
+Ejemplos:
+
+repetir elementos,
+exceder una suma,
+romper una regla de adyacencia,
+usar más recursos de los permitidos.
+Pregunta 2:
+“¿Qué me falta para completar la solución?”
+
+Eso te da la poda de “ya no alcanza”.
+
+Ejemplos:
+
+faltan k elementos,
+faltan letras,
+faltan grupos,
+faltan posiciones.
+Pregunta 3:
+“¿Hay una meta numérica que pueda pasarme?”
+
+Eso te da poda por exceso.
+
+Ejemplos:
+
+suma,
+costo,
+peso,
+tiempo,
+capacidad.
+Pregunta 4:
+“¿Estoy buscando la mejor solución?”
+
+Eso te da poda por comparación con la mejor actual.
+
+6) La plantilla mental que debes decir en el examen
+
+Cuando te pidan explicar la poda, puedes escribir algo como esto:
+
+Criterio de poda:
+Se detiene la exploración de una rama cuando la solución parcial ya no puede conducir a una solución válida u óptima.
+En este caso, se poda cuando ________, porque continuar explorando no produciría una respuesta útil.
+
+Y luego lo adaptas:
+
+“...cuando la suma parcial supera el objetivo”
+“...cuando se repite un elemento”
+“...cuando no quedan suficientes elementos para completar la solución”
+“...cuando la rama actual no puede superar la mejor solución encontrada”
+
+Eso queda muy bien explicado.
+
+"""
+
+#elegir una posible solucion
+#explorar esa posible solucion
+#deshacer: hacer poda
+
+"""
+8) El truco más importante: cómo saber si el for va sobre posiciones o sobre elementos
+
+Esto también te lo pueden evaluar.
+
+Caso A: elegir / no elegir elementos
+
+Cuando el problema es tipo:
+
+subconjuntos,
+combinaciones,
+grupos,
+selección,
+
+normalmente usas:
+
+backtrack(i, ...)
+
+Y en cada elemento decides:
+
+lo tomo,
+no lo tomo.
+
+O también:
+
+for j in range(i, len(nums)):
+Caso B: llenar posiciones
+
+Cuando el problema es tipo:
+
+formar cadenas,
+armar palabras,
+llenar casillas,
+asignar algo en orden,
+
+normalmente haces:
+
+for opcion in opciones:
+
+Porque estás decidiendo qué poner en la siguiente posición.
+
+9)Preguntas trampa de examen que tu profe puede hacer
+Trampa 1:
+“¿Esto no se puede hacer con fuerza bruta?”
+
+Sí, pero backtracking = fuerza bruta inteligente.
+
+La diferencia es que:
+
+fuerza bruta prueba todo,
+backtracking prueba y poda.
+
+💥 Esa frase sirve mucho.
+
+Trampa 2:
+“¿Cuál es la diferencia entre recursión y backtracking?”
+
+Muy importante:
+
+Recursión = técnica de programación.
+Backtracking = estrategia de búsqueda que usa recursión + deshacer decisiones + poda.
+
+O sea:
+
+No toda recursión es backtracking, pero casi todo backtracking usa recursión.
+
+Trampa 3:
+“¿Por qué haces pop()?”
+
+Porque cuando vuelves de la llamada recursiva debes deshacer la decisión para probar otra opción.
+
+Eso es el famoso:
+
+hacer → explorar → deshacer
+
+10) Mini plantilla que te salva cualquier ejercicio
+
+Si mañana te ponen un ejercicio raro, usa esto:
+
+PASO 1: ¿Qué estoy construyendo?
+una lista,
+una cadena,
+un grupo,
+un subconjunto,
+una asignación.
+PASO 2: ¿Qué representa el estado?
+índice,
+suma,
+usados,
+solución parcial,
+contador.
+PASO 3: ¿Cuál es el caso base?
+ya completé tamaño,
+llegué al final,
+alcancé objetivo.
+PASO 4: ¿Cuáles son las opciones?
+tomar / no tomar,
+elegir uno entre varios,
+poner 0 o 1,
+asignar un elemento.
+PASO 5: ¿Dónde podo?
+
+Busca:
+
+restricción rota,
+me pasé,
+ya no alcanza,
+ya está usado,
+no supera la mejor.
+
+"""
