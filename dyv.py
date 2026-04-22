@@ -121,3 +121,87 @@ def encontrar_pico(arr, izq, der):  # función que busca un pico en el rango
         return encontrar_pico(arr, izq, medio - 1)  # si el vecino izquierdo es mayor, el pico está a la izquierda
 
     return encontrar_pico(arr, medio + 1, der)  # si no, el pico está a la derecha
+print("======")
+print("Clase 4/22/2026")
+
+# Clase 4/22/2026
+
+# Validar si una lista dada esta ordenada, returnando true o false
+#Ejercicio 1
+def esta_ordenado(arr, izq, der):
+
+    if izq == der:
+        return True
+    
+    medio = (izq + der) // 2
+
+    izq_ordenado = esta_ordenado(arr, izq, medio)
+    der_ordenado = esta_ordenado(arr, medio + 1, der)
+
+    if izq_ordenado and der_ordenado and arr[medio] > arr[medio + 1]:
+        return False
+
+    return True
+
+arr = [1, 2, 3, 4, 5]
+print(esta_ordenado(arr, 0, len(arr) - 1))  
+
+arr2 = [1, 3, 2, 4]
+print(esta_ordenado(arr2, 0, len(arr2) - 1))  
+
+#Ejercicio 2
+
+#Me dan un arreglo y quiero revertirlo
+
+def invertir(lista):
+    if len(lista) <= 1:
+        return lista
+
+    medio = len(lista) // 2
+    izquierda = lista[:medio]
+    derecha = lista[medio:]
+
+    return invertir(derecha) + invertir(izquierda)
+
+
+lista = [6, 3, 5, 4]
+resultado = invertir(lista)
+
+print("Lista original:", lista)
+print("Lista invertida:", resultado)
+
+print("version profe")
+
+
+def revertir_arreglo(arr, izq= 0, der = None):
+    if der is None:
+        der = len(arr) - 1
+    
+    if izq >= der:
+        return arr
+    
+    arr[izq], arr[der] = arr[der], arr[izq]
+
+    return revertir_arreglo(arr, izq + 1, der - 1)
+
+#Ejercicio 3 - me dan una palabra y decir si es palindromo o no
+
+def es_palindromo(palabra, izq, der):
+    if izq >= der:
+        return True
+
+    if palabra[izq] != palabra[der]:
+        return False
+
+    return es_palindromo(palabra, izq + 1, der - 1)
+
+
+p1 = "reconocer"
+p2 = "hola"
+
+print(p1, ":", es_palindromo(p1, 0, len(p1) - 1))
+print(p2, ":", es_palindromo(p2, 0, len(p2) - 1))
+
+
+#Ejercicio 4 - me dan un arreglo ordenado, y me dan un numero, buscar cual es el piso, el piso es un numero del arreglo que sea menor o igual al que me dieron
+
