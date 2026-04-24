@@ -205,3 +205,145 @@ print(p2, ":", es_palindromo(p2, 0, len(p2) - 1))
 
 #Ejercicio 4 - me dan un arreglo ordenado, y me dan un numero, buscar cual es el piso, el piso es un numero del arreglo que sea menor o igual al que me dieron
 
+print("========================Repaso========================")
+
+#Repaso 
+
+#Sumar todos los elementos de un arreglo
+
+def sumar_elementos(arreglo, inicio, fin):
+    
+    if inicio == fin:
+        return arreglo[inicio]
+    
+    medio = (inicio + fin) // 2
+
+    inicio = sumar_elementos(arreglo, inicio, medio)
+    fin = sumar_elementos(arreglo, medio + 1, fin)
+
+    return inicio + fin
+
+    return resultado
+
+arr = [1, 2, 3, 4]
+# resultado: 10
+
+print(sumar_elementos(arr, 0, len(arr) - 1))
+
+
+#Encontrar el maximo numero de una lista
+
+def maximo(arreglo, inicio, fin):
+
+    if inicio == fin:
+        return arreglo[inicio]
+    
+    medio = (inicio + fin) // 2
+
+    max_izq = maximo(arreglo, inicio, medio)
+    max_der = maximo(arreglo, medio + 1, fin)
+
+
+    if max_izq > max_der:
+        return max_izq
+    else: 
+        return max_der
+    
+arr = [3, 8, 2, 7, 5]
+print(maximo(arr, 0, len(arr) - 1))
+
+#Buscar si un número existe en el arreglo
+
+def existe(arreglo, inicio, fin, x):
+    if inicio == fin:
+        if arreglo[inicio] == x:
+            return True
+        else:
+            return False
+    
+    medio = (inicio + fin) // 2
+
+    izq = existe(arreglo, inicio, medio,x)
+    der = existe(arreglo, medio+ 1, fin,x)
+
+    return izq or der
+
+arr = [5, 8, 2, 7]
+x = 2
+
+print(existe(arr, 0, len(arr) - 1, x))
+
+#Verificar si todos son positivos
+
+def son_positivos(arreglo, inicio, fin):
+    if inicio == fin:
+        if arreglo[inicio] > 0:
+            return True
+        else:
+            return False
+    
+    medio = (inicio + fin) // 2
+
+    izq_positivo = son_positivos(arreglo, inicio, medio)
+    der_positivo = son_positivos(arreglo, medio + 1, fin)
+
+    return izq_positivo and der_positivo
+
+    #if izq_positivo and der_positivo > 0:
+        #return True
+    #else:
+        #return False
+
+arr = [1, 3, -5, 7]
+print(son_positivos(arr, 0, len(arr) - 1))
+
+# resultado: True
+
+
+#Contar números pares
+
+def cuantos_son_pares(arreglo, inicio, fin):
+    if inicio == fin:
+        if arreglo[inicio] % 2 == 0:
+            return 1
+        else:
+            return 0
+        
+    medio = (inicio + fin) // 2
+
+    pares_izq = cuantos_son_pares(arreglo, inicio, medio)
+    pared_der = cuantos_son_pares(arreglo, medio + 1, fin)
+
+    return pared_der + pares_izq
+
+arr = [1, 2, 3, 4, 6, 8]
+print(cuantos_son_pares(arr, 0, len(arr) - 1))
+
+#Encontrar el índice de un número
+
+def buscar_indice(arreglo, inicio, fin, x):
+    
+    if inicio == fin:
+        if arreglo[inicio] == x:
+            return inicio
+        else:
+            return -1
+    
+    medio = (inicio + fin) // 2
+
+    izq = buscar_indice(arreglo, inicio, medio, x)
+    der = buscar_indice(arreglo, medio + 1, fin, x)
+
+    if izq != -1:
+        return izq
+    else:
+        return der
+
+
+arr = [4, 6, 8, 2]
+x = 8
+
+print(buscar_indice(arr, 0, len(arr) - 1, x))
+
+# Complejidad: O(n)
+
