@@ -347,3 +347,31 @@ print(buscar_indice(arr, 0, len(arr) - 1, x))
 
 # Complejidad: O(n)
 
+#Segundo maximo
+
+def segundo_maximo(arreglo, inicio, fin):
+    
+    if inicio == fin:
+        return (arreglo[inicio], float('-inf'))
+    
+    medio = (inicio + fin) // 2
+
+    max1_izq, max2_izq = segundo_maximo(arreglo, inicio, medio)
+    max1_der, max2_der = segundo_maximo(arreglo, medio + 1, fin)
+
+    if max1_izq > max1_der:
+        max1 = max1_izq
+        max2 = max(max2_izq, max1_der)
+    else:
+        max1 = max1_der
+        max2 = max(max2_der, max1_izq)
+
+    return (max1, max2)
+
+
+arr = [3, 8, 2, 10, 5]
+
+resultado = segundo_maximo(arr, 0, len(arr) - 1)
+print(resultado[1])
+
+# Complejidad: O(n)
