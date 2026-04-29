@@ -223,7 +223,7 @@ def sumar_elementos(arreglo, inicio, fin):
 
     return inicio + fin
 
-    return resultado
+    
 
 arr = [1, 2, 3, 4]
 # resultado: 10
